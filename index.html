@@ -1,0 +1,162 @@
+<html>
+
+<head>
+  <script src="./lightweight-charts.standalone.production.js"></script>
+  <link rel="stylesheet" href="index.css">
+  <script>
+    function loadCharts() {
+      console.log('charts..')
+
+      // Line  
+
+      const chartOptions = {
+        width: 1200,
+        height: 500,
+        layout: {
+          textColor: 'white', background: { type: 'solid', color: 'black' }
+        }, grid: {
+          vertLines: {
+            visible: true,
+            color:'#808080'
+          },
+          horzLines: {
+            visible: true,
+            color:'#808080'
+          },
+        },
+        timeScale: {
+          timeVisible: true,
+          secondsVisible: false,
+          rightBarStaysOnScroll: true,
+          tickMarkFormatter: (time, tickMarkType, locale) => {
+            const date = new Date(time * 1000); // Convert milliseconds to seconds
+            return date.toLocaleTimeString(locale, { hour12: false , hour: '2-digit', minute: '2-digit' });
+          },
+          tickMarkTimeSpan: {
+            minutes: 1
+          }
+        },
+      };
+      var chart = LightweightCharts.createChart(document.getElementById('displaychart'), chartOptions);
+      // var lineSeries = chart.addLineSeries();
+      var lineSeries = chart.addBaselineSeries();
+      // chart.resize(1200, 700)
+      // chart.timeScale().applyOptions({
+      //   timeScale: {
+      //     timeVisible: true,
+      //     secondsVisible: true,
+      //     tickMarkFormatter: (time, tickMarkType, locale) => {
+      //       const date = new Date(time * 1000); // Convert milliseconds to seconds
+      //       return date.toLocaleTimeString(locale, { hour12: false });
+      //     }
+      //   }
+      // });
+
+      // chart.priceScale().applyOptions({
+      //   textColor:"#fffff"
+      // });
+
+      var data = [{ value: 48500, time: Date.now() / 1000, topLineColor: '#32AC48' }];
+
+      lineSeries.setData(data);
+
+      var preValue = 48499; var _currentValue = 30; var _rnd = 1; var initialValue = 48499
+      setInterval(function () {
+
+        _rnd = Math.floor(Math.random() * 10)
+
+        if (_rnd < 5) {
+          _currentValue = preValue - Math.floor(Math.random() * 3)
+        } else {
+          _currentValue = preValue + Math.floor(Math.random() * 3)
+        }
+
+        if (_currentValue >= preValue) {
+          lineSeries.update({ value: _currentValue, time: Date.now() / 1000, 
+             topLineColor: '#32AC48'
+           });
+          //  console.log("green");
+          // lineSeries.update({ value: _currentValue, time: Date.now() / 1000,color:"green"
+          //  }); topFillColor1: '#89f59a', bottomLineColor: 'red', bottomFillColor1: '#f7b6b2',bottomFillColor2: '#000000'
+        } else if (_currentValue < preValue) {
+          lineSeries.update({ value: _currentValue, time:Date.now() / 1000, 
+            topLineColor: '#DB4931'
+           });
+          //  console.log("redd");
+          // lineSeries.update({ value: _currentValue, time: Date.now() / 1000, color:"red"
+          //  });, topFillColor1: '#f7b6b2', bottomLineColor: 'red', bottomFillColor1: '#89f59a',bottomFillColor2: '#000000'
+        }
+        const pandlpercent = ((_currentValue - initialValue) / initialValue) * 100;
+        // console.log(pandlpercent);
+       PandLHolder = document.getElementById("pandlval")
+       HeaderVal = document.getElementById("headerval")
+       var roundedPercentage = ""
+       if (pandlpercent>=0) {
+         roundedPercentage = pandlpercent.toFixed(3);
+         PandLHolder.style.color="green"
+         HeaderVal.style.color="green"
+         HeaderVal.innerHTML = "+"+roundedPercentage+"%"
+        //  PandLHolder.style.fontSize = "25px"
+       }else{
+         roundedPercentage = pandlpercent.toFixed(3);
+         PandLHolder.style.color="red"
+         HeaderVal.style.color="red"
+         HeaderVal.innerHTML = roundedPercentage+"%"
+         
+       }
+       PandLHolder.style.fontSize = "30px"
+       PandLHolder.style.fontWeight = "lighter";
+       PandLHolder.innerHTML = roundedPercentage+"%"
+
+       HeaderVal.style.fontSize = "20px"
+       HeaderVal.style.fontWeight = "lighter";
+       HeaderVal.innerHTML = roundedPercentage+"%"
+        preValue = _currentValue;
+      }, 1000);
+
+      // Button events
+      document.getElementById('higherButton').addEventListener('click', function () {
+        preValue += 10;
+        lineSeries.update({ value: preValue, time:Date.now() / 1000, topLineColor: '#32AC48' });
+      });
+
+      document.getElementById('lowerButton').addEventListener('click', function () {
+        preValue -= 10;
+        lineSeries.update({ value: preValue, time:Date.now() / 1000,topLineColor: '#DB4931' });
+      });
+    }
+  </script>
+</head>
+
+<body onload="loadCharts()">
+  <div class="header">
+   <div class="leftcontent"> <span>EUR/USD </span> <span id="headerval"></span> </div>
+   <span class="rightcontent"> $1000.00 </span>
+  </div>
+  <div class="parent">
+    <div id="displaychart"></div>
+    <div class="parentchartside">
+      <div class="chartside">
+        <div class="AmountSec">
+          <span class="Amt">Amount</span>
+          <span class="AmtVal">$ 500</span>
+          <div>
+            <span class="plusminus"> - </span><span class="plusminus"> + </span>
+          </div>
+        </div>
+        <div class="pandl profitcontent">
+         <h3 style="margin: 0 0 ; ">Profit</h3>
+         <span id="pandlval"></span>
+         <span class="bpandval">+$455.91</span>
+        </div>
+        <button class="btnstylehigh" id="higherButton">
+          <span class="iconup"></span><h4>Higher</h4>
+        </button>
+        <button class="btnstylelow" id="lowerButton">
+          <span class="iconlow"></span> <h4>Lower</h4></button>
+      </div>
+    </div>
+  </div>
+</body>
+
+</html>
